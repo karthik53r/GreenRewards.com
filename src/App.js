@@ -1,25 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Container } from '@mui/material';
+import axios from 'axios';
+import Navbar from './comonenets/Navbar';
+import Home from './comonenets/Home';
+import Redeem from './comonenets/Redeem';
+import Rewards from './comonenets/Rewards';
+import Register from './comonenets/Register';
+import Login from './comonenets/Login';
 
-function App() {
+const App = () => {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await axios.get('http://localhost:5000/api/auth/me', {
+            headers: {
+              'x-auth-token': token,
+            },
+          });
+          setUser(res.data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar user={user} onLogout={handleLogout}/>
+      <Container sx={{ mt: 2 }}>
+        <Routes>
+          <Route path="/" element={<Home user={user} setUser={setUser}/>} />
+          <Route path="/rewards" element={<Rewards user={user} setUser={setUser}/>} />
+          <Route path="/redeem" element={<Redeem user={user} setUser={setUser}/>} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Container>
+    </Router>
   );
-}
+};
 
 export default App;
