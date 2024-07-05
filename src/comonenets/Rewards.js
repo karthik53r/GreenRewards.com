@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Login from './Login';
 import {
   Container,
   Typography,
@@ -11,8 +12,6 @@ import {
   Slide,
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { useNavigate } from 'react-router-dom';
-
 const Step = ({ number, title, description }) => {
   return (
     <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
@@ -34,7 +33,6 @@ const Rewards = ({ user, setUser }) => {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -54,7 +52,7 @@ const Rewards = ({ user, setUser }) => {
       }
     };
     fetchUserData();
-  }, []);
+  }, [setUser]);
 
   const handleImageUpload = async () => {
     if (!imageFile) return;
@@ -66,7 +64,7 @@ const Rewards = ({ user, setUser }) => {
 
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.put('http://localhost:5000/api/auth/coins', { coins: 10 }, {
+      const res = await axios.put('http://localhost:5000/api/auth/addcoins', { coins: 10 }, {
         headers: {
           'x-auth-token': token,
           'Content-Type': 'application/json',
@@ -74,7 +72,7 @@ const Rewards = ({ user, setUser }) => {
       });
       setRewardCoins(res.data.rewardCoins);
       setShowCelebration(true); // Show celebration animation on successful upload
-
+      setUser(user);
       // Hide celebration message after 2 seconds
       setTimeout(() => {
         setShowCelebration(false);
@@ -87,88 +85,93 @@ const Rewards = ({ user, setUser }) => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
-          <Paper elevation={3} sx={{ p: 4, mt: '12rem' }}>
-            <Typography variant="body1" gutterBottom>
-              Reward Coins: {rewardCoins}
-            </Typography>
-            <Grid container spacing={2} justifyContent="center">
-              <Grid item xs={12} md={6}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Button
-                    variant="contained"
-                    component="label"
-                    startIcon={<UploadFileIcon />}
-                    sx={{ width: '80%' }}
+    <>
+      {!user && <Login />}
+      {user &&
+        <Container maxWidth="lg">
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={8}>
+              <Paper elevation={3} sx={{ p: 4, mt: '12rem' }}>
+                <Typography variant="body1" gutterBottom>
+                  Reward Coins: {rewardCoins}
+                </Typography>
+                <Grid container spacing={2} justifyContent="center">
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Button
+                        variant="contained"
+                        component="label"
+                        startIcon={<UploadFileIcon />}
+                        sx={{ width: '80%' }}
+                      >
+                        Upload Image
+                        <input
+                          type="file"
+                          hidden
+                          onChange={(e) => setImageFile(e.target.files[0])}
+                        />
+                      </Button>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleImageUpload}
+                        sx={{ width: '80%' }}
+                        disabled={loading}
+                      >
+                        {loading ? <CircularProgress size={24} /> : 'Submit'}
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
+                {/* Celebrating animation */}
+                <Slide
+                  direction={showCelebration ? 'right' : 'left'}
+                  in={showCelebration}
+                  mountOnEnter
+                  unmountOnExit
+                >
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      textAlign: 'center',
+                      mt: 4
+                    }}
                   >
-                    Upload Image
-                    <input
-                      type="file"
-                      hidden
-                      onChange={(e) => setImageFile(e.target.files[0])}
-                    />
-                  </Button>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleImageUpload}
-                    sx={{ width: '80%' }}
-                    disabled={loading}
-                  >
-                    {loading ? <CircularProgress size={24} /> : 'Submit'}
-                  </Button>
-                </Box>
-              </Grid>
+                    🎉 Congratulations on your rewards! 🎉
+                  </Typography>
+                </Slide>
+              </Paper>
             </Grid>
-            {/* Celebrating animation */}
-            <Slide
-              direction={showCelebration ? 'right' : 'left'}
-              in={showCelebration}
-              mountOnEnter
-              unmountOnExit
-            >
-              <Typography
-                variant="h5"
-                sx={{
-                  textAlign: 'center',
-                  mt: 4
-                }}
-              >
-                🎉 Congratulations on your rewards! 🎉
-              </Typography>
-            </Slide>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4} mt={'5rem'}>
-          <Step
-            number="01"
-            title="Capture Image"
-            description="Use the reverse vending machine web application to capture an image of the item you want to recycle."
-          />
-          <Step
-            number="02"
-            title="Receive Reward Coins"
-            description="Once the image is processed, you will receive reward coins that can be used for movie tickets, vouchers, and more."
-          />
-          <Step
-            number="03"
-            title="Redeem Rewards"
-            description="Redeem your reward coins for exciting rewards and benefits."
-          />
-          <Step
-            number="04"
-            title="Enjoy Benefits"
-            description="Use your reward coins to enjoy discounts on movie tickets, vouchers, and other offers."
-          />
-        </Grid>
-      </Grid>
-    </Container>
+            <Grid item xs={12} md={4} mt={'5rem'}>
+              <Step
+                number="01"
+                title="Capture Image"
+                description="Use the reverse vending machine web application to capture an image of the item you want to recycle."
+              />
+              <Step
+                number="02"
+                title="Receive Reward Coins"
+                description="Once the image is processed, you will receive reward coins that can be used for movie tickets, vouchers, and more."
+              />
+              <Step
+                number="03"
+                title="Redeem Rewards"
+                description="Redeem your reward coins for exciting rewards and benefits."
+              />
+              <Step
+                number="04"
+                title="Enjoy Benefits"
+                description="Use your reward coins to enjoy discounts on movie tickets, vouchers, and other offers."
+              />
+            </Grid>
+          </Grid>
+        </Container>
+      }
+    </>
   );
 };
 
