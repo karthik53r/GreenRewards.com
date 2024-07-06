@@ -48,7 +48,7 @@ const Redeem = ({ user, setUser }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const res = await axios.get('http://localhost:5000/api/auth/me', {
+                    const res = await axios.get('https://green-rewards-api-7th4.vercel.app/api/auth/me', {
                         headers: {
                             'x-auth-token': token,
                         },
@@ -90,7 +90,7 @@ const Redeem = ({ user, setUser }) => {
             // Example: Update user's reward points on the server
             const token = localStorage.getItem('token');
             if (token) {
-                axios.put('http://localhost:5000/api/auth/updatecoins', { rewardCoins: updatedRewardCoins }, {
+                axios.put('https://green-rewards-api-7th4.vercel.app/api/auth/updatecoins', { rewardCoins: updatedRewardCoins }, {
                     headers: {
                         'x-auth-token': token,
                     },

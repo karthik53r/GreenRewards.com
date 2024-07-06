@@ -16,7 +16,7 @@ const App = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const res = await axios.get('http://localhost:5000/api/auth/me', {
+          const res = await axios.get('https://green-rewards-api-7th4.vercel.app/api/auth/me', {
             headers: {
               'x-auth-token': token,
             },

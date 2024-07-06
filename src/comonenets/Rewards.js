@@ -39,7 +39,7 @@ const Rewards = ({ user, setUser }) => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const res = await axios.get('http://localhost:5000/api/auth/me', {
+          const res = await axios.get('https://green-rewards-api-7th4.vercel.app/api/auth/me', {
             headers: {
               'x-auth-token': token,
             },
@@ -64,7 +64,7 @@ const Rewards = ({ user, setUser }) => {
 
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.put('http://localhost:5000/api/auth/addcoins', { coins: 10 }, {
+      const res = await axios.put('https://green-rewards-api-7th4.vercel.app/api/auth/addcoins', { coins: 10 }, {
         headers: {
           'x-auth-token': token,
           'Content-Type': 'application/json',

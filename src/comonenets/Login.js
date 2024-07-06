@@ -23,7 +23,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+      const res = await axios.post('https://green-rewards-api-7th4.vercel.app/api/auth/login', { username, password });
       localStorage.setItem('token', res.data.token);
       window.location.href = '/';
     } catch (error) {
